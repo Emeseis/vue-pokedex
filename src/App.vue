@@ -1,7 +1,7 @@
 <template>
   <v-app>
     <div class="header">
-      <v-img src="https://img.pokemondb.net/design/header-lg.png" class="banner" width="1140px" height="100px"></v-img>   
+      <v-img src="../public/header-lg.png" class="banner" width="1140px" height="100px"></v-img>   
     </div>    
     <div class="app-div mb-2">         
       <div class="ma-3 mb-8">
@@ -44,16 +44,6 @@
 <script>
 export default {
   name: 'App',
-  data: () => ({
-    pokemonList: {}
-  }),
-  methods: {
-  },
-  mounted() {
-    fetch("https://pokeapi.co/api/v2/pokedex/kanto")
-      .then(res => { if (res.ok) return res.json() })
-      .then(res => { this.pokemonList = res.pokemon_entries });
-  }
 };
 </script>
 
@@ -111,6 +101,11 @@ export default {
     color: #484848;
     font-style: italic;
     margin: 0 0 1rem 2rem;
+  }
+  .panel {
+    background-color: #f0f0f0;
+    padding: 1rem;
+    border-radius: 4px;
   }
   .v-toolbar__content {
     padding: 0 2px;

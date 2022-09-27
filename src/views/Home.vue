@@ -25,11 +25,11 @@
           <h2>
             {{ news.title }}
           </h2>
-          <p class="news-subtitle">
-            Pokémon — {{ formatDate('07/09/22') }}
+          <p style="color: #737373">
+            Pokémon — {{ formatDate(news.date) }}
           </p>
           <div class="news-content mb-4"></div>
-          <p><a :href="news.link" target="_blank" class="a-foward">Continue reading »</a></p>
+          <p><a :href="news.link" target="_blank" class="font-weight-bold">Continue reading »</a></p>
           <hr>
         </div>
         <v-btn @click="prevPage()">
@@ -67,8 +67,8 @@ export default {
     page: 1
   }),
   methods: {    
-    formatDate(arara) {
-      return moment(arara).format('DD MMMM, YYYY')
+    formatDate(date) {
+      return moment(date).format('DD MMMM, YYYY')
     },
     nextPage() {
       if (this.newsList.length < 10) return;
@@ -139,17 +139,6 @@ export default {
 <style scoped>
   .container {
     padding: 1.5rem 2rem;
-  }
-  .news-subtitle {
-    color: #737373
-  }
-  .a-foward {
-    font-weight: bold;
-  }
-  .panel {
-    background-color: #f0f0f0;
-    padding: 1rem;
-    border-radius: 4px;
   }
   .no-uppercase-btn {
     margin-right: -1px !important;
