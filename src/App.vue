@@ -1,7 +1,7 @@
 <template>
   <v-app>
     <div class="header">
-      <v-img src="https://img.pokemondb.net/design/header-lg.png" class="banner" width="1140px" height="100px"></v-img>   
+      <v-img src="https://img.pokemondb.net/design/header-lg.png" @click="navigateTo('Home')" class="banner" width="1140px" height="100px"></v-img>   
     </div>    
     <div class="app-div mb-2">         
       <div class="ma-3 mb-8">
@@ -48,6 +48,9 @@ export default {
     pokemonList: {}
   }),
   methods: {
+    navigateTo(route) {
+      this.$router.push({ name: route })
+    }
   },
   mounted() {
     fetch("https://pokeapi.co/api/v2/pokedex/kanto")
@@ -135,6 +138,9 @@ export default {
   }
   .banner {
     margin: 0 auto;
+  }
+  .banner:hover {
+    cursor: pointer;
   }
   .app-div {
     max-width: 1244px !important;
