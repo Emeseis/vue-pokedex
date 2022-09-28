@@ -45,6 +45,13 @@
 export default {
   name: 'App',
   methods: {
+    capitalize(string) {
+      return string.charAt(0).toUpperCase() + string.slice(1);
+    },
+    zero(value) {
+      var zeroes = new Array(4).join("0");
+      return (zeroes + value).slice(-3);
+    },
     navigateTo(route) {
       this.$router.push({ name: route })
     }
@@ -66,12 +73,12 @@ export default {
   .v-application {
     font-family: "Fira Sans";
   }
-  a {
-    color: #2769be;
+  a:not(.type):not(.no-uppercase-btn) {
+    color: #2769be !important;
     text-decoration: none;
     transition: color .2s,background-color .2s;
   }
-  a:hover{
+  a:not(.type):hover {
     color: #a42121 !important;
     text-decoration: underline;
     outline: 0;
@@ -114,6 +121,58 @@ export default {
   }
   .v-toolbar__content {
     padding: 0 2px;
+  }
+  .type:hover {
+    text-decoration: underline;
+    outline: 0;
+  }
+  .fire {
+    color: #d52100 !important;
+  }
+  .grass {
+    color: #5cb737 !important;
+  }
+  .poison {
+    color: #88447a !important;
+  }
+  .flying {
+    color: #556dff !important;
+  }
+  .water {
+    color: #0080ff !important;
+  }
+  .bug {
+    color: #83901a !important;
+  }
+  .ground {
+    color: #bf9926 !important;
+  }
+  .normal {
+    color: #797964 !important;
+  }
+  .dragon {
+    color: #4e38e9 !important;
+  }
+  .psychic {
+    color: #ff227a !important;
+  }
+  .electric {
+    color: #c90 !important;
+  }
+  .fighting {
+    color: #a84d3d !important;
+  }
+  .rock {
+    color: #a59249 !important;
+  }
+  .ghost {
+    color: #5454b3 !important;
+  }
+  .fairy {
+    color: #ffb8d5 !important;
+  }
+  .ice {
+    color: #0af !important;
   }
 </style>
 

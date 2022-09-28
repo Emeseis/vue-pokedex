@@ -11,26 +11,26 @@
       <v-col>
         <div class="panel">
           <p>
-            <b>FireRed & LeafGreen</b> stick to the original 151 Pokémon of Red/Blue/Yellow, despite having introduced two new generatios of Pokémon in the meantime, including evolutions of Kanto Pokémon. Said Pokémon (such as Crobat, Pichu) are only obtainable after the <a href="">National Dex</a> is acquired.
+            <b>FireRed & LeafGreen</b> stick to the original 151 Pokémon of Red/Blue/Yellow, despite having introduced two new generations of Pokémon in the meantime, including evolutions of Kanto Pokémon. Said Pokémon (such as Crobat, Pichu) are only obtainable after the <a href="">National Dex</a> is acquired.
           </p>
           <p class="mb-0">
-            Pokémon stats can be seen on the Gen 1 Pokémon stats page.
+            Pokémon stats can be seen on the <a href="">Gen 1 Pokémon stats</a> page.
           </p>
         </div>
       </v-col>
     </v-row>
-    <v-row class="justify-space-between">
+    <div class="pokemon-grid">
       <v-col cols="auto" class="text-center" v-for="(pokemon, index) in pokemonList" :key="index">
-        <img :src="pokemon.sprite" class="img-center"><br>
+        <img :src="pokemon.sprite" class="sprite mb-n2" @click="navigateTo('Home')"><br>
         <span style="color: #737373; font-size: 14px">#{{ zero(pokemon.id) }}</span><br>
-        <a color="#20b0ee" class="font-weight-bold">{{ capitalize(pokemon.name) }}</a><br>
+        <a color="#20b0ee" class="font-weight-bold" @click="navigateTo('Home')">{{ capitalize(pokemon.name) }}</a><br>
         <div class="types">
-          <span class="type1">{{ pokemon.types[0].type.name }}</span>
-          <span style="font-size: 10px">{{ pokemon.types.length == 2 ? '●' : '' }}</span>
-          <span class="type2">{{ pokemon.types.length == 2 ? pokemon.types[1].type.name : '' }}</span>
+          <a :class="'type '+pokemon.types[0].type.name">{{ capitalize(pokemon.types[0].type.name) }}</a>
+          <span v-if="pokemon.types.length == 2"> · </span>
+          <a v-if="pokemon.types.length == 2" :class="'type '+pokemon.types[1].type.name">{{ capitalize(pokemon.types[1].type.name) }}</a>
         </div>
       </v-col>
-    </v-row>
+    </div>
   </v-container>
 </template>
 
@@ -50,6 +50,9 @@ export default {
       var zeroes = new Array(4).join("0");
       return (zeroes + value).slice(-3);
     },
+    navigateTo(route) {
+      this.$router.push({ name: route })
+    }
   },
   async mounted() {
     const response = await fetch("https://pokeapi.co/api/v2/pokedex/kanto");
@@ -57,14 +60,13 @@ export default {
     for await (const item of pokedexData.pokemon_entries) {    
       const response2 = await fetch(`https://pokeapi.co/api/v2/pokemon/${item.entry_number}`)
       const pokemonData = await response2.json();
-      let pokemon = {          
+      let pokemon = {
         id: item.entry_number,
         name: item.pokemon_species.name,
         sprite: `https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/${item.entry_number}.png`,
         types: pokemonData.types
       }
-      this.pokemonList.push(pokemon) 
-      console.log(pokemon)
+      this.pokemonList.push(pokemon)
     }
   }
 };
@@ -75,9 +77,14 @@ export default {
   padding: 1.5rem 2rem;
 }
 .types {
-  font-size: 14px;
+  font-size: 0.84rem;
 }
-.img-center {
-  display: inline-block !important;
+.pokemon-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+  grid-gap: 0rem 0.5rem;
+}
+.sprite:hover {
+  cursor: pointer;
 }
 </style>
