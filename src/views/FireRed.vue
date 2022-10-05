@@ -21,9 +21,9 @@
     </v-row>
     <div class="pokemon-grid">
       <v-col cols="auto" class="text-center" v-for="(pokemon, index) in pokemonList" :key="index">
-        <img :src="pokemon.sprite" class="sprite mb-n2" @click="navigateTo('Home')"><br>
+        <img :src="pokemon.sprite" class="sprite mb-n2" @click="openModalInfo(pokemon)"><br>
         <span style="color: #737373; font-size: 14px">#{{ zero(pokemon.id) }}</span><br>
-        <a color="#20b0ee" class="font-weight-bold" @click="navigateTo('Home')">{{ capitalize(pokemon.name) }}</a><br>
+        <a color="#20b0ee" class="font-weight-bold" @click="openModalInfo(pokemon)">{{ capitalize(pokemon.name) }}</a><br>
         <div class="types">
           <a :class="'type '+pokemon.types[0].type.name">{{ capitalize(pokemon.types[0].type.name) }}</a>
           <span v-if="pokemon.types.length == 2"> · </span>
@@ -31,13 +31,26 @@
         </div>
       </v-col>
     </div>
+    <PokemonInfoModal
+      :isInfo="infoModal.isInfo"
+      :pokemonClicked="infoModal.pokemonClicked"
+      @printCancel="printCancel()"
+    />
   </v-container>
 </template>
 
 <script>
+import PokemonInfoModal from "../components/PokemonInfoModal.vue";
 export default {
   name: 'FireRed',
+  components: {
+    PokemonInfoModal,
+  },
   data: () => ({
+    infoModal: {
+      isInfo: false,
+      pokemonClicked: {}
+    },
     pokedex: [],
     pokemonList: [],
     pokemonObjList: [],
@@ -52,6 +65,15 @@ export default {
     },
     navigateTo(route) {
       this.$router.push({ name: route })
+    },
+    openModalInfo(pokemon) {
+      console.log({pokemon})
+      this.infoModal.pokemonClicked = pokemon;
+      this.infoModal.isInfo = true;
+    },
+    closeModal() {
+      console.log('fechar')
+      this.infoModal.isInfo = false;
     }
   },
   async mounted() {
