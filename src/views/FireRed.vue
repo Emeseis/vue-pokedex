@@ -32,9 +32,8 @@
       </v-col>
     </div>
     <PokemonInfoModal
-      :isInfo="infoModal.isInfo"
+      v-model="infoModal.isInfo"
       :pokemonClicked="infoModal.pokemonClicked"
-      @printCancel="printCancel()"
     />
   </v-container>
 </template>
@@ -67,14 +66,9 @@ export default {
       this.$router.push({ name: route })
     },
     openModalInfo(pokemon) {
-      console.log({pokemon})
       this.infoModal.pokemonClicked = pokemon;
       this.infoModal.isInfo = true;
     },
-    closeModal() {
-      console.log('fechar')
-      this.infoModal.isInfo = false;
-    }
   },
   async mounted() {
     const response = await fetch("https://pokeapi.co/api/v2/pokedex/kanto");
