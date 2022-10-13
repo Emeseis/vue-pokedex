@@ -86,28 +86,24 @@
         </div>
         <v-col class="mb-4">
           <v-row>
-            <v-btn x-small dark depressed class="type" color="#aa9">Normal</v-btn>
-            <v-btn x-small dark depressed class="type" color="#f42">Fire</v-btn>
-            <v-btn x-small dark depressed class="type" color="#39f">Water</v-btn>
-            <v-btn x-small dark depressed class="type" color="#fc3">Electric</v-btn>
-            <v-btn x-small dark depressed class="type" color="#7c5">Grass</v-btn>
-            <v-btn x-small dark depressed class="type" color="#6cf">Ice</v-btn>
-          </v-row>
-          <v-row>
-            <v-btn x-small dark depressed class="type" color="#b54">Fighting</v-btn>
-            <v-btn x-small dark depressed class="type" color="#a59">Poison</v-btn>
-            <v-btn x-small dark depressed class="type" color="#db5">Ground</v-btn>
-            <v-btn x-small dark depressed class="type" color="#89f">Flying</v-btn>
-            <v-btn x-small dark depressed class="type" color="#f59">Psychic</v-btn>
-            <v-btn x-small dark depressed class="type" color="#ab2">Bug</v-btn>
-          </v-row>
-          <v-row>
-            <v-btn x-small dark depressed class="type" color="#ba6">Rock</v-btn>
-            <v-btn x-small dark depressed class="type" color="#66b">Ghost</v-btn>
-            <v-btn x-small dark depressed class="type" color="#76e">Dragon</v-btn>
-            <v-btn x-small dark depressed class="type" color="#754">Dark</v-btn>
-            <v-btn x-small dark depressed class="type" color="#aab">Steel</v-btn>
-            <v-btn x-small dark depressed class="type" color="#e9e">Fairy</v-btn>
+            <TypeIcon type="Normal"/>
+            <TypeIcon type="Fire"/>
+            <TypeIcon type="Water"/>
+            <TypeIcon type="Electric"/>
+            <TypeIcon type="Grass"/>
+            <TypeIcon type="Ice"/>
+            <TypeIcon type="Fighting"/>
+            <TypeIcon type="Poison"/>
+            <TypeIcon type="Ground"/>
+            <TypeIcon type="Flying"/>
+            <TypeIcon type="Psychic"/>
+            <TypeIcon type="Bug"/>
+            <TypeIcon type="Rock"/>
+            <TypeIcon type="Ghost"/>
+            <TypeIcon type="Dragon"/>
+            <TypeIcon type="Dark"/>
+            <TypeIcon type="Steel"/>
+            <TypeIcon type="Fairy"/>
           </v-row>
         </v-col>
         <v-btn block x-large depressed dark height="64" href="https://api.allorigins.win/raw?url=https://pokemondb.net/news/feed" target="_blank" color="#ff7f0f" class="no-uppercase-btn">
@@ -129,6 +125,7 @@
 
 <script>
 import moment from 'moment'
+import TypeIcon from '@/components/TypeIcon.vue';
 export default {
   name: 'Home',
   data: () => ({ 
@@ -136,6 +133,9 @@ export default {
     newsList: [],
     page: 1
   }),
+  components: {
+    TypeIcon
+},
   methods: {    
     formatDate(date) {
       return moment(date).format('DD MMMM, YYYY')
@@ -209,14 +209,6 @@ export default {
 <style scoped>
   .container {
     padding: 1.5rem 2rem;
-  }
-  .type {
-    width: 57.5px;
-    margin: 2px;
-    min-height: 26px;
-    border: 1px solid rgba(0,0,0,.2) !important;
-    font-weight: 400 !important;
-    text-shadow: 1px 1px 2px rgb(0 0 0 / 70%);
   }
   .no-uppercase-btn {
     margin-right: -1px !important;
