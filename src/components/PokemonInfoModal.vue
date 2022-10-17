@@ -23,6 +23,7 @@
         <v-row>
           <v-col>
             <div class="panel-blue d-flex justify-space-around">
+              <v-btn text class="no-uppercase-btn">Contents</v-btn>
               <v-btn text class="no-uppercase-btn">Info</v-btn>
               <v-btn text class="no-uppercase-btn">Base stats</v-btn>
               <v-btn text class="no-uppercase-btn">Evolution chart</v-btn>
@@ -32,6 +33,13 @@
               <v-btn text class="no-uppercase-btn">Locations</v-btn>
               <v-btn text class="no-uppercase-btn">Language</v-btn>
             </div>
+          </v-col>
+        </v-row>
+        <v-row>
+          <v-col>
+            <p>
+              <span class="font-italic">{{ capitalize(pokemon.name) }}</span> is a <span :class="pokemon.types[0].type.name">{{ capitalize(pokemon.types[0].type.name) }}</span><span v-if="pokemon.types[1]">/</span ><span :class="pokemon.types[1].type.name" v-if="pokemon.types[1]">{{ capitalize(pokemon.types[1].type.name) }}</span> type Pokémon introduced in Generation 1. It is known as the '{{ moreInfo.genera[7].genus }}'.
+            </p>
           </v-col>
         </v-row>
         <v-row>
