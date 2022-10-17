@@ -212,16 +212,11 @@ export default {
   }
   .no-uppercase-btn {
     margin-right: -1px !important;
-    text-transform: unset !important;
-    letter-spacing: normal !important;
     font-weight: 400 !important;
     text-shadow: 1px 1px 2px rgb(0 0 0 / 70%);
   }
   .no-uppercase-btn:hover{
     color: #fff !important;
     text-decoration: none;
-  }
-  .text-small {
-    font-size: .875rem;
   }
 </style>

@@ -48,10 +48,6 @@ export default {
     capitalize(string) {
       return string.charAt(0).toUpperCase() + string.slice(1);
     },
-    zero(value) {
-      var zeroes = new Array(4).join("0");
-      return (zeroes + value).slice(-3);
-    },
     navigateTo(route) {
       this.$router.push({ name: route })
     }
@@ -72,6 +68,14 @@ export default {
   }  
   .v-application {
     font-family: "Fira Sans";
+  }
+  .theme--light.v-data-table td:not(.vertical-header) {
+    color: #404040;
+  }
+  p {
+    font-size: 1rem;
+    font-family: "Fira Sans";
+    color: #404040;
   }
   a:not(.type):not(.no-uppercase-btn) {
     color: #2769be !important;
@@ -107,17 +111,25 @@ export default {
     border: 0;
     clear: both;
   }
+  ul, ol, blockquote {
+    margin: 0 0 1rem 2rem;
+  }
   blockquote {
     padding: 0 8px;
     border-left: 3px solid #6fad57;
     color: #484848;
     font-style: italic;
-    margin: 0 0 1rem 2rem;
   }
   .panel {
     background-color: #f0f0f0;
     padding: 1rem;
     border-radius: 4px;
+  }
+  .text-small {
+    font-size: .875rem !important;
+  }
+  .text-smaller {
+    font-size: .775rem !important;
   }
   .v-toolbar__content {
     padding: 0 2px;
@@ -174,6 +186,10 @@ export default {
   .ice {
     color: #0af !important;
   }
+  .no-uppercase-btn {
+    text-transform: unset !important;
+    letter-spacing: normal !important;
+  }
 </style>
 
 <style scoped>  
@@ -206,8 +222,6 @@ export default {
     background-image: linear-gradient(#404040, #363636);
   } 
   .no-uppercase-btn {
-    text-transform: unset !important;
-    letter-spacing: normal;
     font-size: 1rem;
     min-width: 244px !important;
     text-shadow: 1px 1px 2px rgb(0 0 0 / 70%);

@@ -22,7 +22,7 @@
     <div class="pokemon-grid">
       <v-col cols="auto" class="text-center" v-for="(pokemon, index) in pokemonList" :key="index">
         <img :src="pokemon.sprite" class="sprite mb-n2" @click="openModalInfo(pokemon)"><br>
-        <span style="color: #737373; font-size: 14px">#{{ zero(pokemon.id) }}</span><br>
+        <span style="color: #737373; font-size: 14px">#{{ zerofy(pokemon.id) }}</span><br>
         <a color="#20b0ee" class="font-weight-bold" @click="openModalInfo(pokemon)">{{ capitalize(pokemon.name) }}</a><br>
         <div class="types">
           <a :class="'type '+pokemon.types[0].type.name">{{ capitalize(pokemon.types[0].type.name) }}</a>
@@ -32,8 +32,12 @@
       </v-col>
     </div>
     <PokemonInfoModal
-      v-model="infoModal.isInfo"
-      :pokemonClicked="infoModal.pokemonClicked"
+      v-model="isModal"
+      :pokemon="pokemon"
+      :moreInfo="moreInfo"
+      :pokemonPrev="pokemonPrev"
+      :pokemonNext="pokemonNext"
+      @changePokemon="openModalInfo"
     />
   </v-container>
 </template>
@@ -46,28 +50,46 @@ export default {
     PokemonInfoModal,
   },
   data: () => ({
-    infoModal: {
-      isInfo: false,
-      pokemonClicked: {}
-    },
+    isModal: false,
     pokedex: [],
     pokemonList: [],
     pokemonObjList: [],
+    pokemon: {},
+    moreInfo: {},
+    pokemonPrev: {},
+    pokemonNext: {},
   }),
   methods: {
     capitalize(string) {
       return string.charAt(0).toUpperCase() + string.slice(1);
     },
-    zero(value) {
-      var zeroes = new Array(4).join("0");
+    zerofy(value) {
+      let zeroes = new Array(4).join("0");
       return (zeroes + value).slice(-3);
     },
     navigateTo(route) {
       this.$router.push({ name: route })
     },
-    openModalInfo(pokemon) {
-      this.infoModal.pokemonClicked = pokemon;
-      this.infoModal.isInfo = true;
+    async openModalInfo(pokemon) {
+      await this.fetchPokemon(pokemon.id)
+      this.isModal = true;
+    },    
+    async fetchPokemon(id) {
+      const response = await fetch(`https://pokeapi.co/api/v2/pokemon/${id}`);
+      this.pokemon = await response.json();
+      const response2 = await fetch(`https://pokeapi.co/api/v2/pokemon-species/${this.pokemon.id}`);
+      this.moreInfo = await response2.json();
+      // console.log(this.pokemon, this.moreInfo);
+      if (id != 1) { 
+        const idPrev = (id - 1);
+        const responsePrev = await fetch(`https://pokeapi.co/api/v2/pokemon/${idPrev}`) 
+        this.pokemonPrev = await responsePrev.json();
+      }
+      if (id != 151) {
+        const idNext = (id + 1);
+        const responseNext = await fetch(`https://pokeapi.co/api/v2/pokemon/${idNext}`);
+        this.pokemonNext = await responseNext.json();
+      }
     },
   },
   async mounted() {
