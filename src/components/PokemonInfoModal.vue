@@ -1,7 +1,7 @@
 <template>
-  <v-dialog v-model="visible" scrollable width="1220px" content-class="ma-0" v-if="Object.keys(pokemon).length > 0">    
-    <v-card class="card pa-0">
-      <v-card-text class="pt-10">      
+  <v-dialog v-model="visible" scrollable width="1220px" ref="dialog" content-class="ma-0" v-if="Object.keys(pokemon).length > 0">    
+    <v-card class="card pa-0 pt-4">
+      <v-card-text class="pt-4">      
         <v-row class="text-center">
           <v-col class="pb-2">
             <h1 class="">
@@ -38,13 +38,13 @@
         <v-row>
           <v-col>
             <p>
-              <span class="font-italic">{{ capitalize(pokemon.name) }}</span> is a <span :class="pokemon.types[0].type.name">{{ capitalize(pokemon.types[0].type.name) }}</span><span v-if="pokemon.types[1]">/</span ><span :class="pokemon.types[1].type.name" v-if="pokemon.types[1]">{{ capitalize(pokemon.types[1].type.name) }}</span> type Pokémon introduced in Generation 1. It is known as the '{{ moreInfo.genera[7].genus }}'.
+              <span class="font-italic">{{ capitalize(pokemon.name) }}</span> is a <span :class="pokemon.types[0].type.name">{{ capitalize(pokemon.types[0].type.name) }}</span><span v-if="pokemon.types[1]">/</span ><span :class="pokemon.types[1].type.name" v-if="pokemon.types[1]">{{ capitalize(pokemon.types[1].type.name) }}</span> type Pokémon introduced in Generation 1. It is known as the '{{ species }}'.
             </p>
           </v-col>
         </v-row>
         <v-row>
           <v-col cols="4">
-            <v-img class="img-artwork" style="text-align: center" height="360" width="360" :src="pokemon.sprites.other['official-artwork'].front_default"></v-img>
+            <v-img class="img-artwork" style="text-align: center" height="360" width="360" :src="artWorkUrl||''"></v-img>
           </v-col>
           <v-col cols="4">
             <h2 class="ml-4">Pokédex data</h2>
@@ -64,7 +64,7 @@
                   </tr>
                   <tr>
                     <td class="vertical-header">Species</td>
-                    <td>{{ moreInfo.genera[7].genus }}</td>
+                    <td>{{ species }}</td>
                   </tr>
                   <tr>
                     <td class="vertical-header">Height</td>
@@ -349,6 +349,7 @@
         <v-row>
           <v-col>
             <h2>Evolution chart</h2>
+            <v-img v-for="(pokemon, i) in evolutionChain" :key="i" src=""></v-img>
           </v-col>
         </v-row>
       </v-card-text>
@@ -369,13 +370,28 @@ export default {
   },
   watch: {
     pokemon(newV) {
-      if(newV) {
-        let arrayType = [];
-        this.pokemon.types.forEach(type => { arrayType.push(type.type.name) });
+      if (newV) {
+        // const dialog = this.$refs['dialog']
+        // console.log(dialog);
+        // dialog.scrollIntoView({ block: "start" });
+        const arrayType = this.pokemon.types.map(type => type.type.name);        
         this.getMultipliers(arrayType);
+        this.artWorkUrl = this.pokemon.sprites.other['official-artwork'].front_default;
+      }
+    },
+    moreInfo(newV) {
+      if (newV) {
+        this.getEvolutionChain(this.moreInfo.evolution_chain.url);
+        this.species = this.moreInfo.genera[7].genus;
       }
     }
   },
+  data: () => ({
+    typeDefenses: {},
+    evolutionChain: {},
+    artWorkUrl: '',
+    species: '',
+  }),
   computed: {
     visible: {
       get () { return this.value },
@@ -440,9 +456,6 @@ export default {
       return '';
     },
   },
-  data: () => ({
-    typeDefenses: {}
-  }),
   methods: {
     capitalize(string) {
       if (!string) return;
@@ -510,7 +523,26 @@ export default {
 
       });
       this.typeDefenses = multipliers.defense;
-    }
+    },
+    async getEvolutionChain(url) {
+      const response = await fetch(url);
+      const chainData = await response.json();
+      const depthFirst = (getChildren) => (node) => [node, ...(getChildren (node) || []).flatMap(depthFirst (getChildren))];
+      const makePokeList = (pokes) => depthFirst(node => node.evolves_to) (pokes.chain).map(({species}) => species);
+      const pokemons = makePokeList(chainData);
+      for await (const item of pokemons) {    
+        const response2 = await fetch(item.url.replace('-species', ''))
+        const pokemonData = await response2.json();
+        console.log({pokemonData});
+        let pokemon = {
+          id: pokemonData.id,
+          name: pokemonData.name,
+          sprite: `https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/${pokemonData.id}.png`,
+          types: pokemonData.types
+        }
+        this.evolutionChaint.push(pokemon)
+      }
+    },
   },
 };
 </script>
