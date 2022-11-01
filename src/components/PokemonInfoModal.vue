@@ -1,7 +1,7 @@
 <template>
-  <v-dialog v-model="visible" scrollable width="1220px" ref="dialog" content-class="ma-0" v-if="Object.keys(pokemon).length > 0">    
-    <v-card class="card pa-0 pt-4">
-      <v-card-text class="pt-4">      
+  <v-dialog v-model="visible" v-if="visible" scrollable width="1220px" content-class="ma-0">
+    <v-card class="card px-0 py-4">
+      <v-card-text class="pt-4">
         <v-row class="text-center">
           <v-col class="pb-2">
             <h1 class="">
@@ -38,13 +38,13 @@
         <v-row>
           <v-col>
             <p>
-              <span class="font-italic">{{ capitalize(pokemon.name) }}</span> is a <span :class="pokemon.types[0].type.name">{{ capitalize(pokemon.types[0].type.name) }}</span><span v-if="pokemon.types[1]">/</span ><span :class="pokemon.types[1].type.name" v-if="pokemon.types[1]">{{ capitalize(pokemon.types[1].type.name) }}</span> type Pokémon introduced in Generation 1. It is known as the '{{ species }}'.
+              <span class="font-italic">{{ capitalize(pokemon.name) }}</span> is a <span :class="pokemon.types[0].type.name">{{ capitalize(pokemon.types[0].type.name) }}</span><span v-if="pokemon.types[1]">/</span ><span :class="pokemon.types[1].type.name" v-if="pokemon.types[1]">{{ capitalize(pokemon.types[1].type.name) }}</span> type Pokémon introduced in Generation 1. It is known as the '{{ PokemonSpecies }}'.
             </p>
           </v-col>
         </v-row>
         <v-row>
           <v-col cols="4">
-            <v-img class="img-artwork" style="text-align: center" height="360" width="360" :src="artWorkUrl||''"></v-img>
+            <v-img class="img-artwork" style="text-align: center" height="360" width="360" :src="ArtWorkURL||''"></v-img>
           </v-col>
           <v-col cols="4">
             <h2 class="ml-4">Pokédex data</h2>
@@ -64,7 +64,7 @@
                   </tr>
                   <tr>
                     <td class="vertical-header">Species</td>
-                    <td>{{ species }}</td>
+                    <td>{{ PokemonSpecies }}</td>
                   </tr>
                   <tr>
                     <td class="vertical-header">Height</td>
@@ -143,7 +143,7 @@
                   <tr>
                     <td class="vertical-header">Base Friendship</td>
                     <td>
-                      {{ moreInfo.base_happiness }} 
+                      {{ moreInfo.base_happiness }}
                       <span v-if="moreInfo.base_happiness <  50" class="text-small g">(lower than normal)</span>
                       <span v-if="moreInfo.base_happiness == 50" class="text-small g">(normal)</span>
                       <span v-if="moreInfo.base_happiness >  50" class="text-small g">(higher than normal)</span>
@@ -165,7 +165,7 @@
               <template v-slot:body>
                 <tbody>
                   <tr>
-                    <td class="vertical-header" width="26%">Egg Groups</td>
+                    <td class="vertical-header" width="27%">Egg Groups</td>
                     <td>
                       <a><span>{{ capitalize(moreInfo.egg_groups[0].name) }}</span></a>
                       <span v-if="moreInfo.egg_groups[1]">, </span>
@@ -349,7 +349,24 @@
         <v-row>
           <v-col>
             <h2>Evolution chart</h2>
-            <v-img v-for="(pokemon, i) in evolutionChain" :key="i" src=""></v-img>
+            <v-row>
+              <v-spacer></v-spacer>
+              <v-col cols="auto" class="text-center" v-for="(pokemon, i) in evolutionChain" :key="i">
+                <v-img class="img" :src="pokemon.sprite" @click="changePokemon(pokemon)" height="144" width="144"></v-img>
+                <span style="color: #737373; font-size: 14px">#{{ zerofy(pokemon.id) }}</span><br>
+                <a style="font-size: 1rem" color="#20b0ee" class="font-weight-bold" @click="changePokemon(pokemon)">{{ capitalize(pokemon.name) }}</a><br>
+                <div class="types">
+                  <a :class="'type '+pokemon.types[0].type.name">{{ capitalize(pokemon.types[0].type.name) }}</a>
+                  <span v-if="pokemon.types.length == 2"> · </span>
+                  <a v-if="pokemon.types.length == 2" :class="'type '+pokemon.types[1].type.name">{{ capitalize(pokemon.types[1].type.name) }}</a>
+                </div>
+                <!-- <span>(Evolves from)</span>
+                <span v-if="pokemon.evolves[0].evolution_details[0].item">(Use {{ capitalize(pokemon.evolves[0].evolution_details[0].item.name) }})</span>
+                <span v-if="pokemon.evolves[0].evolution_details[0].min_level">(Level {{ pokemon.evolves[0].evolution_details[0].min_level }})</span>
+                <span v-if="pokemon.evolves[0].evolution_details[0].min_happiness">(High Friendship)</span> -->
+              </v-col>
+              <v-spacer></v-spacer>
+            </v-row>
           </v-col>
         </v-row>
       </v-card-text>
@@ -358,39 +375,18 @@
 </template>
 
 <script>
-import all_types from '../assets/all_types.json';
 import TypeIcon from '@/components/TypeIcon.vue';
 import EffectivenessIcon from '@/components/EffectivenessIcon.vue';
 export default {
   name: 'InfoModal',
-  props: ['value','pokemon','pokemonPrev','pokemonNext','moreInfo'],
+  props: ['value','pokemon','pokemonPrev','pokemonNext','moreInfo','typeDefenses','evolutionChain'],
   components: {
     TypeIcon,
     EffectivenessIcon
   },
   watch: {
-    pokemon(newV) {
-      if (newV) {
-        // const dialog = this.$refs['dialog']
-        // console.log(dialog);
-        // dialog.scrollIntoView({ block: "start" });
-        const arrayType = this.pokemon.types.map(type => type.type.name);        
-        this.getMultipliers(arrayType);
-        this.artWorkUrl = this.pokemon.sprites.other['official-artwork'].front_default;
-      }
-    },
-    moreInfo(newV) {
-      if (newV) {
-        this.getEvolutionChain(this.moreInfo.evolution_chain.url);
-        this.species = this.moreInfo.genera[7].genus;
-      }
-    }
   },
   data: () => ({
-    typeDefenses: {},
-    evolutionChain: {},
-    artWorkUrl: '',
-    species: '',
   }),
   computed: {
     visible: {
@@ -455,6 +451,12 @@ export default {
       if (this.moreInfo.growth_rate.name == 'fast-then-very-slow') return 'Fluctuating';
       return '';
     },
+    ArtWorkURL() {
+      return this.pokemon.sprites.other['official-artwork'].front_default;
+    },
+    PokemonSpecies() {
+      return this.moreInfo.genera[7].genus;
+    }
   },
   methods: {
     capitalize(string) {
@@ -495,53 +497,7 @@ export default {
       if (value <= 89) return '#ffdd57';
       if (value <= 119) return '#a0e515';
       if (value <= 149) return '#23cd5e';
-      else return '#00c2b8';
-    },
-    getMultipliers(types) {
-      let multipliers = { defense: {}, attack: {} };
-
-      types.forEach((type) => {
-        let damage_relations = all_types[type];
-        let no_damage_from = damage_relations.defense.zero;
-        let half_damage_from = damage_relations.defense.half;
-        let double_damage_from = damage_relations.defense.double;
-
-        no_damage_from.forEach((type) => {
-          if (Object.prototype.hasOwnProperty.call(multipliers.defense, type)) multipliers.defense[type] = multipliers.defense[type] * 0;
-          else multipliers.defense[type] = 0;
-        });
-
-        half_damage_from.forEach((type) => {
-          if (Object.prototype.hasOwnProperty.call(multipliers.defense, type)) multipliers.defense[type] = multipliers.defense[type] * 0.5;
-          else multipliers.defense[type] = 0.5;
-        });
-
-        double_damage_from.forEach((type) => {
-          if (Object.prototype.hasOwnProperty.call(multipliers.defense, type)) multipliers.defense[type] = multipliers.defense[type] * 2;
-          else multipliers.defense[type] = 2;
-        });
-
-      });
-      this.typeDefenses = multipliers.defense;
-    },
-    async getEvolutionChain(url) {
-      const response = await fetch(url);
-      const chainData = await response.json();
-      const depthFirst = (getChildren) => (node) => [node, ...(getChildren (node) || []).flatMap(depthFirst (getChildren))];
-      const makePokeList = (pokes) => depthFirst(node => node.evolves_to) (pokes.chain).map(({species}) => species);
-      const pokemons = makePokeList(chainData);
-      for await (const item of pokemons) {    
-        const response2 = await fetch(item.url.replace('-species', ''))
-        const pokemonData = await response2.json();
-        console.log({pokemonData});
-        let pokemon = {
-          id: pokemonData.id,
-          name: pokemonData.name,
-          sprite: `https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/${pokemonData.id}.png`,
-          types: pokemonData.types
-        }
-        this.evolutionChaint.push(pokemon)
-      }
+      return '#00c2b8';
     },
   },
 };
@@ -590,5 +546,18 @@ export default {
     border: 1px solid rgba(0,0,0,.2) !important;
     font-weight: 400 !important;
     text-shadow: 1px 1px 2px rgb(0 0 0 / 70%);
+  }
+  .img:hover {
+    cursor: pointer;
+  }
+  .fade-leave-active {
+    transition-delay: 40000ms;
+    transition-duration: 0;
+  }
+  .flex-row {
+    display: flex;
+  }
+  .icon-arrow {
+    font: normal 2.5rem/1 "Arial Unicode MS","Trebuchet MS","Arial","Helvetica",sans-serif;
   }
 </style>

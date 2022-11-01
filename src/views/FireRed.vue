@@ -37,12 +37,15 @@
       :moreInfo="moreInfo"
       :pokemonPrev="pokemonPrev"
       :pokemonNext="pokemonNext"
+      :typeDefenses="typeDefenses"
+      :evolutionChain="evolutionChain"
       @changePokemon="openModalInfo"
     />
   </v-container>
 </template>
 
 <script>
+import axios from 'axios';
 import PokemonInfoModal from "../components/PokemonInfoModal.vue";
 export default {
   name: 'FireRed',
@@ -58,6 +61,9 @@ export default {
     moreInfo: {},
     pokemonPrev: {},
     pokemonNext: {},
+    typeDefenses: {},
+    evolutionChain: [],
+    allTypes: {},
   }),
   methods: {
     capitalize(string) {
@@ -72,6 +78,8 @@ export default {
     },
     async openModalInfo(pokemon) {
       await this.fetchPokemon(pokemon.id)
+      await this.getMultipliers();
+      await this.getEvolutionChain();
       this.isModal = true;
     },    
     async fetchPokemon(id) {
@@ -91,8 +99,63 @@ export default {
         this.pokemonNext = await responseNext.json();
       }
     },
+    async getMultipliers() { 
+      const types = this.pokemon.types.map(type => type.type.name); 
+      let multipliers = { defense: {}, attack: {} };
+
+      for await (const type of types) {
+        let damage_relations = this.allTypes[type];
+        let no_damage_from = damage_relations.defense.zero;
+        let half_damage_from = damage_relations.defense.half;
+        let double_damage_from = damage_relations.defense.double;
+
+        no_damage_from.forEach((type) => {
+          if (Object.prototype.hasOwnProperty.call(multipliers.defense, type)) multipliers.defense[type] = multipliers.defense[type] * 0;
+          else multipliers.defense[type] = 0;
+        });
+        half_damage_from.forEach((type) => {
+          if (Object.prototype.hasOwnProperty.call(multipliers.defense, type)) multipliers.defense[type] = multipliers.defense[type] * 0.5;
+          else multipliers.defense[type] = 0.5;
+        });
+        double_damage_from.forEach((type) => {
+          if (Object.prototype.hasOwnProperty.call(multipliers.defense, type)) multipliers.defense[type] = multipliers.defense[type] * 2;
+          else multipliers.defense[type] = 2;
+        });
+      }
+      this.typeDefenses = multipliers.defense;
+    },
+    async getTypes() {
+      axios.get(`http://localhost:3000/types`)
+        .then(res => this.allTypes = res.data)
+        .catch(err => console.log(err))
+    },
+    async getEvolutionChain() {
+      this.evolutionChain = [];
+      const response = await fetch(this.moreInfo.evolution_chain.url);
+      const chainData = await response.json();
+
+      const depthFirst = (getChildren) => (node) => [node, ...(getChildren (node) || []).flatMap(depthFirst (getChildren))];
+      const makePokeList = (pokes) => depthFirst(node => node.evolves_to) (pokes.chain);
+      const pokemons = makePokeList(chainData);
+
+      for await (const poke of pokemons) {    
+        const response2 = await fetch(poke.species.url.replace('-species', ''))
+        const pokemonData = await response2.json();
+        let pokemon = {
+          id: pokemonData.id,
+          name: pokemonData.name,
+          sprite: pokemonData.sprites.other['official-artwork'].front_default,
+          types: pokemonData.types,
+          details: poke.evolution_details,
+          evolves: poke.evolves_to
+        }
+        this.evolutionChain.push(pokemon);
+      }
+      console.log(this.evolutionChain);
+    },
   },
   async mounted() {
+    this.getTypes();
     const response = await fetch("https://pokeapi.co/api/v2/pokedex/kanto");
     const pokedexData = await response.json();
     for await (const item of pokedexData.pokemon_entries) {    

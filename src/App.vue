@@ -6,7 +6,7 @@
     <div class="app-div mb-2">         
       <div class="ma-3 mb-8">
         <v-toolbar dark dense rounded floating class="app-toolbar elevation-0 d-flex">
-          <v-btn text large class="no-uppercase-btn px-lg-10">
+          <v-btn text large class="no-uppercase-btn px-lg-10" @click="$router.push({ path: '/pokedex/firered' })">
             <v-icon left size="25px" color="#a3a3a3">mdi-pokeball</v-icon>
             Pokémon data
           </v-btn>
