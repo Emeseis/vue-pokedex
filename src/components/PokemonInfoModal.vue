@@ -349,24 +349,7 @@
         <v-row>
           <v-col>
             <h2>Evolution chart</h2>
-            <v-row>
-              <v-spacer></v-spacer>
-              <v-col cols="auto" class="text-center" v-for="(pokemon, i) in evolutionChain" :key="i">
-                <v-img class="img" :src="pokemon.sprite" @click="changePokemon(pokemon)" height="144" width="144"></v-img>
-                <span style="color: #737373; font-size: 14px">#{{ zerofy(pokemon.id) }}</span><br>
-                <a style="font-size: 1rem" color="#20b0ee" class="font-weight-bold" @click="changePokemon(pokemon)">{{ capitalize(pokemon.name) }}</a><br>
-                <div class="types">
-                  <a :class="'type '+pokemon.types[0].type.name">{{ capitalize(pokemon.types[0].type.name) }}</a>
-                  <span v-if="pokemon.types.length == 2"> · </span>
-                  <a v-if="pokemon.types.length == 2" :class="'type '+pokemon.types[1].type.name">{{ capitalize(pokemon.types[1].type.name) }}</a>
-                </div>
-                <!-- <span>(Evolves from)</span>
-                <span v-if="pokemon.evolves[0].evolution_details[0].item">(Use {{ capitalize(pokemon.evolves[0].evolution_details[0].item.name) }})</span>
-                <span v-if="pokemon.evolves[0].evolution_details[0].min_level">(Level {{ pokemon.evolves[0].evolution_details[0].min_level }})</span>
-                <span v-if="pokemon.evolves[0].evolution_details[0].min_happiness">(High Friendship)</span> -->
-              </v-col>
-              <v-spacer></v-spacer>
-            </v-row>
+            <EvolutionChart v-if="visible" :nodes="nodes" @changePokemon="changePokemon"/>
           </v-col>
         </v-row>
       </v-card-text>
@@ -377,17 +360,25 @@
 <script>
 import TypeIcon from '@/components/TypeIcon.vue';
 import EffectivenessIcon from '@/components/EffectivenessIcon.vue';
+import EvolutionChart from '@/components/EvolutionChart.vue'
 export default {
   name: 'InfoModal',
   props: ['value','pokemon','pokemonPrev','pokemonNext','moreInfo','typeDefenses','evolutionChain'],
   components: {
     TypeIcon,
-    EffectivenessIcon
-  },
-  watch: {
+    EffectivenessIcon,
+    EvolutionChart
   },
   data: () => ({
+    nodes: []
   }),
+  watch: {
+    visible(newV) {
+      if(newV) {
+        this.nodes = this.evolutionChain;
+      }
+    }
+  },
   computed: {
     visible: {
       get () { return this.value },
@@ -440,7 +431,7 @@ export default {
       )
     },
     PokeDex() {
-      return this.moreInfo.pokedex_numbers
+      return this.moreInfo.pokedex_numbers;
     },
     Growth_Rate() {
       if (this.moreInfo.growth_rate.name == 'slow') return 'Slow';
@@ -473,9 +464,9 @@ export default {
       let zeroes = new Array(3).join("0");
       return (zeroes + value).slice(-2);
     },
-    changePokemon(id) {
+    changePokemon(pokemon) {
       this.visible = false;
-      this.$emit('changePokemon', id)
+      this.$emit('changePokemon', pokemon)
     },
     toFeetInch(m) {
       let cm = m*100;
@@ -498,7 +489,7 @@ export default {
       if (value <= 119) return '#a0e515';
       if (value <= 149) return '#23cd5e';
       return '#00c2b8';
-    },
+    }
   },
 };
 </script>

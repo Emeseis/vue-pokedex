@@ -10,15 +10,15 @@
             <v-icon left size="25px" color="#a3a3a3">mdi-pokeball</v-icon>
             Pokémon data
           </v-btn>
-          <v-btn text large class="no-uppercase-btn px-lg-10">
+          <v-btn text large class="no-uppercase-btn px-lg-10" disabled>
             <v-icon left size="25px" color="#a3a3a3">mdi-cog</v-icon> 
             Game mechanics
           </v-btn>
-          <v-btn text large class="no-uppercase-btn px-lg-10">
+          <v-btn text large class="no-uppercase-btn px-lg-10" disabled>
             <v-icon left size="25px" color="#a3a3a3">mdi-controller-classic</v-icon>
             Pokémon games
           </v-btn>
-          <v-btn text large class="no-uppercase-btn px-lg-10">
+          <v-btn text large class="no-uppercase-btn px-lg-10" disabled>
             <v-icon left size="25px" color="#a3a3a3">mdi-message-processing</v-icon>
             Community/Other
           </v-btn>

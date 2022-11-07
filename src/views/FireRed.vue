@@ -64,6 +64,7 @@ export default {
     typeDefenses: {},
     evolutionChain: [],
     allTypes: {},
+    evolve_trigger: '',
   }),
   methods: {
     capitalize(string) {
@@ -87,14 +88,13 @@ export default {
       this.pokemon = await response.json();
       const response2 = await fetch(`https://pokeapi.co/api/v2/pokemon-species/${this.pokemon.id}`);
       this.moreInfo = await response2.json();
-      // console.log(this.pokemon, this.moreInfo);
-      if (id != 1) { 
-        const idPrev = (id - 1);
+      if (this.pokemon.id != 1) { 
+        const idPrev = (this.pokemon.id - 1);
         const responsePrev = await fetch(`https://pokeapi.co/api/v2/pokemon/${idPrev}`) 
         this.pokemonPrev = await responsePrev.json();
       }
-      if (id != 151) {
-        const idNext = (id + 1);
+      if (this.pokemon.id != 151) {
+        const idNext = (this.pokemon.id + 1);
         const responseNext = await fetch(`https://pokeapi.co/api/v2/pokemon/${idNext}`);
         this.pokemonNext = await responseNext.json();
       }
@@ -138,20 +138,52 @@ export default {
       const makePokeList = (pokes) => depthFirst(node => node.evolves_to) (pokes.chain);
       const pokemons = makePokeList(chainData);
 
-      for await (const poke of pokemons) {    
+      let level = 1;
+      for await (const [key, poke] of pokemons.entries()) {  
         const response2 = await fetch(poke.species.url.replace('-species', ''))
         const pokemonData = await response2.json();
+        const response3 = await fetch(poke.species.url)
+        const pokemonSpecies = await response3.json();
+        let pid = null;
+        if (pokemonSpecies.evolves_from_species) {
+          const response = await fetch(`https://pokeapi.co/api/v2/pokemon/${pokemonSpecies.evolves_from_species.name}`);
+          const pokemonSpecies2 = await response.json();
+          pid = pokemonSpecies2.id;
+          if (!(this.evolutionChain[key-1].pid == pid)) level++;
+        }
+        let type1 = this.capitalize(pokemonData.types[0].type.name);
+        let type2 = pokemonData.types[1] ? this.capitalize(pokemonData.types[1].type.name) : '';
+
+        let typesString = '';
+        typesString += '<svg>'
+        typesString += `<text class="types-text" x="72" y="230">`;
+        typesString += `<tspan class="${type1}">${type1}</tspan>`;
+        if (type2) typesString += '<tspan fill="black"> · </tspan>';
+        if (type2) typesString += `<tspan class="${type2}">${type2}</tspan>`;
+        typesString += '</text>';
+        typesString += '</svg>';
+
         let pokemon = {
           id: pokemonData.id,
-          name: pokemonData.name,
-          sprite: pokemonData.sprites.other['official-artwork'].front_default,
-          types: pokemonData.types,
+          idF: this.zerofy(pokemonData.id),
+          name: this.capitalize(pokemonData.name),
+          img: pokemonData.sprites.other['official-artwork'].front_default,
+          types: typesString,
           details: poke.evolution_details,
-          evolves: poke.evolves_to
+          pid: pid,
+          evolves_to: poke.evolves_to,
+          evolve_trigger: this.evolution_trigger,
+          level,
         }
         this.evolutionChain.push(pokemon);
+        this.evolution_trigger = '';
+        if (poke.evolves_to.length) poke.evolves_to.forEach(item => {
+          if (item.evolution_details[0].item) this.evolution_trigger = `Use ${this.capitalize(item.evolution_details[0].item.name)}`
+          if (item.evolution_details[0].min_level) this.evolution_trigger = `Level ${item.evolution_details[0].min_level}`
+          if (item.evolution_details[0].held_item) this.evolution_trigger = `Trade holding ${this.capitalize(item.evolution_details[0].held_item.name)}`
+        });
       }
-      console.log(this.evolutionChain);
+        console.log(this.evolutionChain);
     },
   },
   async mounted() {
