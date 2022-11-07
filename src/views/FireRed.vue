@@ -64,7 +64,7 @@ export default {
     typeDefenses: {},
     evolutionChain: [],
     allTypes: {},
-    evolve_trigger: '',
+    evolution_trigger: [],
   }),
   methods: {
     capitalize(string) {
@@ -139,6 +139,7 @@ export default {
       const pokemons = makePokeList(chainData);
 
       let level = 1;
+      this.evolution_trigger = []
       for await (const [key, poke] of pokemons.entries()) {  
         const response2 = await fetch(poke.species.url.replace('-species', ''))
         const pokemonData = await response2.json();
@@ -172,18 +173,19 @@ export default {
           details: poke.evolution_details,
           pid: pid,
           evolves_to: poke.evolves_to,
-          evolve_trigger: this.evolution_trigger,
+          evolve_trigger: this.evolution_trigger.length ? this.evolution_trigger[key-1] : '',
           level,
         }
         this.evolutionChain.push(pokemon);
-        this.evolution_trigger = '';
         if (poke.evolves_to.length) poke.evolves_to.forEach(item => {
-          if (item.evolution_details[0].item) this.evolution_trigger = `Use ${this.capitalize(item.evolution_details[0].item.name)}`
-          if (item.evolution_details[0].min_level) this.evolution_trigger = `Level ${item.evolution_details[0].min_level}`
-          if (item.evolution_details[0].held_item) this.evolution_trigger = `Trade holding ${this.capitalize(item.evolution_details[0].held_item.name)}`
+          console.log(item.evolution_details);
+          // if (item.evolution_details[0].trigger) https://pokeapi.co/api/v2/evolution-trigger/
+          if (item.evolution_details[0].item) this.evolution_trigger.push(`Use ${this.capitalize(item.evolution_details[0].item.name)}`);
+          if (item.evolution_details[0].min_level) this.evolution_trigger.push(`Level ${item.evolution_details[0].min_level}`);
+          if (item.evolution_details[0].held_item) this.evolution_trigger.push(`Trade holding ${this.capitalize(item.evolution_details[0].held_item.name)}`);
         });
       }
-        console.log(this.evolutionChain);
+      console.log(this.evolutionChain);
     },
   },
   async mounted() {
