@@ -278,8 +278,8 @@
                       <v-progress-linear
                         :value="getPercentage(Sts_Speed)"
                         :color="getStatColor(Sts_Speed)"
-                        height="15"
                         background-opacity="0"
+                        height="15"
                       ></v-progress-linear>
                     </td>
                     <td style="text-align: right">{{ Math.floor((Sts_Speed*2+5)*0.9) }}</td>
@@ -349,7 +349,12 @@
         <v-row>
           <v-col>
             <h2>Evolution chart</h2>
-            <EvolutionChart v-if="visible" :nodes="nodes" @changePokemon="changePokemon"/>
+            <EvolutionChart v-if="visible && nodes.length > 1" :nodes="nodes" @changePokemon="changePokemon"/>
+            <ul v-else class="ml-0">
+              <li class="mt-4" style='font-size: 1rem;font-family: "Fira Sans";color: #404040;'>
+                <i>{{ capitalize(pokemon.name) }}</i> does not evolve.
+              </li>
+            </ul>
           </v-col>
         </v-row>
       </v-card-text>

@@ -60,6 +60,9 @@ export default {
   #search-field {
     margin-bottom: -25px;
   }
+  .v-dialog:not(.v-dialog--fullscreen) {
+    max-height: 96% !important;
+  }
   #search-field .v-text-field .v-input__control .v-input__slot {
     min-height: auto;
     height: 30px;
@@ -80,12 +83,16 @@ export default {
   a:not(.type):not(.no-uppercase-btn) {
     color: #2769be !important;
     text-decoration: none;
-    transition: color .2s,background-color .2s;
+    transition: color .2s, background-color .2s;
   }
   a:not(.type):hover {
     color: #a42121 !important;
     text-decoration: underline;
     outline: 0;
+  }
+  .no-uppercase-btn {
+    text-transform: unset !important;
+    letter-spacing: normal !important;
   }
   h1, h2, h3 {
     color: black; 
@@ -186,10 +193,6 @@ export default {
   .ice {
     color: #0af !important;
   }
-  .no-uppercase-btn {
-    text-transform: unset !important;
-    letter-spacing: normal !important;
-  }
 </style>
 
 <style scoped>  
@@ -226,4 +229,5 @@ export default {
     min-width: 244px !important;
     text-shadow: 1px 1px 2px rgb(0 0 0 / 70%);
   }
+  
 </style>
