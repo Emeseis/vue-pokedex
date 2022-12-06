@@ -61,7 +61,7 @@ export default {
     margin-bottom: -25px;
   }
   .v-dialog:not(.v-dialog--fullscreen) {
-    max-height: 96% !important;
+    max-height: 97% !important;
   }
   #search-field .v-text-field .v-input__control .v-input__slot {
     min-height: auto;
