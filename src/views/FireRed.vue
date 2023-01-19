@@ -78,6 +78,18 @@ export default {
       let zeroes = new Array(4).join("0");
       return (zeroes + value).slice(-3);
     },
+    generation(gen) {
+      if (gen == 'generation-i') return 1;
+      if (gen == 'generation-ii') return 2;
+      if (gen == 'generation-iii') return 3;
+      if (gen == 'generation-iv') return 4;
+      if (gen == 'generation-v') return 5;
+      if (gen == 'generation-vi') return 6;
+      if (gen == 'generation-vii') return 7;
+      if (gen == 'generation-viii') return 8;
+      if (gen == 'generation-ix') return 9;
+      return 10;
+    },
     navigateTo(route) {
       this.$router.push({ name: route });
     },
@@ -127,11 +139,6 @@ export default {
         });
       }
       this.typeDefenses = multipliers.defense;
-    },
-    async getTypes() {
-      axios.get(`http://localhost:3000/types`)
-        .then(res => this.allTypes = res.data)
-        .catch(err => console.log(err))
     },
     async getEvolutionChain() {
       this.evolutionChain = [];
@@ -221,35 +228,22 @@ export default {
           if (evolve.trigger.name == 'take-damage') {
             text = 'near Dusty Bowl';
           }
-          if (evolve.time_of_day) {
-            text += `, ${this.capitalize(evolve.time_of_day)}`
-          };
-          if (evolve.gender) {
-            if (evolve.gender == 1) text += ', Female'
-            if (evolve.gender == 2) text += ', Male'
-          }
-          
+          if (evolve.time_of_day) text += `, ${this.capitalize(evolve.time_of_day)}`;
+          if (evolve.gender == 1) text += ', Female';
+          if (evolve.gender == 2) text += ', Male';
           this.evolution_trigger.push(text);
         });
       }
+      console.log(this.evolutionChain);
     },
   },
-  async mounted() {
-    this.getTypes();
-    const response = await fetch("https://pokeapi.co/api/v2/pokedex/kanto");
-    const pokedexData = await response.json();
-    for await (const item of pokedexData.pokemon_entries) {    
-      const response2 = await fetch(item.pokemon_species.url.replace('-species', ''));
-      const pokemonData = await response2.json();
-      let pokemon = {
-        id: pokemonData.id,
-        entry: item.entry_number,
-        name: item.pokemon_species.name,
-        sprite: `https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/${pokemonData.id}.png`,
-        types: pokemonData.types
-      }
-      this.pokemonList.push(pokemon);
-    }
+  async created() {
+    await axios.get(`http://localhost:3000/pokedex/1`)
+      .then(res => this.pokemonList = res.data)
+      .catch(err => console.log(err))
+    await axios.get(`http://localhost:3000/types`)
+      .then(res => this.allTypes = res.data)
+      .catch(err => console.log(err))
   }
 };
 </script>

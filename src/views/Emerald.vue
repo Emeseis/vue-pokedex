@@ -221,14 +221,9 @@ export default {
           if (evolve.trigger.name == 'take-damage') {
             text = 'near Dusty Bowl';
           }
-          if (evolve.time_of_day) {
-            text += `, ${this.capitalize(evolve.time_of_day)}`
-          };
-          if (evolve.gender) {
-            if (evolve.gender == 1) text += ', Female'
-            if (evolve.gender == 2) text += ', Male'
-          }
-          
+          if (evolve.time_of_day) text += `, ${this.capitalize(evolve.time_of_day)}`;
+          if (evolve.gender == 1) text += ', Female';
+          if (evolve.gender == 2) text += ', Male';
           this.evolution_trigger.push(text);
         });
       }
