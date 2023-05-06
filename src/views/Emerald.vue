@@ -41,19 +41,23 @@
       :evolutionChain="evolutionChain"
       @changePokemon="openModalInfo"
     />
+    <Loader :isLoading="isLoading"></Loader>
   </v-container>
 </template>
 
 <script>
 import axios from 'axios';
+import Loader from "../components/Loader.vue";
 import PokemonInfoModal from "../components/PokemonInfoModal.vue";
 export default {
   name: 'Emerald',
   components: {
-    PokemonInfoModal,
+    Loader,
+    PokemonInfoModal
   },
   data: () => ({
     isModal: false,
+    isLoading: false,
     pokedex: [],
     pokemonList: [],
     pokemonObjList: [],
@@ -82,9 +86,11 @@ export default {
       this.$router.push({ name: route });
     },
     async openModalInfo(pokemon) {
+      this.isLoading = true;
       await this.fetchPokemon(pokemon.id);
       await this.getMultipliers();
       await this.getEvolutionChain();
+      this.isLoading = false;
       this.isModal = true;
     },    
     async fetchPokemon(id) {
@@ -129,7 +135,7 @@ export default {
       this.typeDefenses = multipliers.defense;
     },
     async getTypes() {
-      axios.get(`http://localhost:3000/types`)
+      axios.get(`https://node-pokedex-api.onrender.com/types`)
         .then(res => this.allTypes = res.data)
         .catch(err => console.log(err))
     },
