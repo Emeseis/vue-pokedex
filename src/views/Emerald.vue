@@ -135,7 +135,7 @@ export default {
       this.typeDefenses = multipliers.defense;
     },
     async getTypes() {
-      axios.get(`https://node-pokedex-api.onrender.com/types`)
+      axios.get(`https://api-pokedex-node.glitch.me//types`)
         .then(res => this.allTypes = res.data)
         .catch(err => console.log(err))
     },

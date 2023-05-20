@@ -244,10 +244,10 @@ export default {
     },
   },
   async created() {
-    await axios.get(`https://node-pokedex-api.onrender.com/pokedex/1`)
+    await axios.get(`https://api-pokedex-node.glitch.me//pokedex/1`)
       .then(res => this.pokemonList = res.data)
       .catch(err => console.log(err))
-    await axios.get(`https://node-pokedex-api.onrender.com/types`)
+    await axios.get(`https://api-pokedex-node.glitch.me//types`)
       .then(res => this.allTypes = res.data)
       .catch(err => console.log(err))
   }
